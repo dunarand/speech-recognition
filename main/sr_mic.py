@@ -1,3 +1,10 @@
+"""Includes main files for speech_recognition via microphone
+
+functions:
+    listen_loop
+    listen
+"""
+
 import speech_recognition as sr
 
 def listen_loop(rcg: sr.Recognizer) -> None:
@@ -6,9 +13,6 @@ def listen_loop(rcg: sr.Recognizer) -> None:
     Args:
         rcg (sr.Recognizer): Instance of a Recognize class object from the 
         speech_recognition library.
-    
-    Returns:
-        None
     """
     with sr.Microphone() as source:
         while True:
@@ -25,14 +29,10 @@ def listen(rcg: sr.Recognizer) -> str:
         speech_recognition library.
 
     Returns:
-        str: Transcribed string
+        str: Transcribed audio as string
     """
     with sr.Microphone() as source:
         rcg.adjust_for_ambient_noise(source, duration=2)
         print('Waiting for you to speak...')
         audio = rcg.listen(source)
         return rcg.recognize_google(audio)
-
-if __name__ == '__main__':
-    r = sr.Recognizer()
-    print(listen(r))

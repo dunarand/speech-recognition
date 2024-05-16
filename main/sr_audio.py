@@ -1,3 +1,9 @@
+"""Includes functions for transcribing pre-recoded audio files
+
+functions:
+    audio_trnscriber
+"""
+
 import speech_recognition as sr
 
 def audio_transcriber(rcg: sr.Recognizer, src: str) -> str:
