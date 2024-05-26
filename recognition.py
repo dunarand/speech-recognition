@@ -1,86 +1,22 @@
+"""
+Includes functions to recognize configured audio
+
+Functions:
+    recognize_audio
+    listen_and_process_audio
+    main
+"""
+
 import threading
 from queue import Queue, Empty
-import collections
 
-from datetime import datetime
-import logging
-from typing import Iterator
-
-import numpy as np
-import pyaudio
 import webrtcvad
 import speech_recognition as sr
 
-log_filename = datetime.now().strftime("speech_recognition_%Y-%m-%d-%H-%M-%S.log")
+from utils import setup_logger, list_input_devices, select_language
+from audio import audio_to_vad_format, vad_collector, frame_generator
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    handlers=[
-                        logging.FileHandler(
-                            filename=f'./logs/{log_filename}',
-                            encoding='utf-8'
-                        ),
-                        logging.StreamHandler()
-                    ])
-logger = logging.getLogger(__name__)
-
-def audio_to_vad_format(audio_data: sr.AudioData) -> np.ndarray:
-    return np.frombuffer(audio_data.frame_data, dtype=np.int16)
-
-def vad_collector(
-        sample_rate: int,
-        frame_duration_ms: int,
-        padding_duration_ms: int,
-        vad: webrtcvad.Vad,
-        frames: list
-) -> Iterator[bytes]:
-    num_padding_frames = int(padding_duration_ms / frame_duration_ms)
-    ring_buffer = collections.deque(maxlen=num_padding_frames)
-    triggered = False
-    voiced_frames = []
-
-    for frame in frames:
-        is_speech = vad.is_speech(frame.bytes, sample_rate)
-
-        if not triggered:
-            ring_buffer.append((frame, is_speech))
-            num_voiced = len([f for f, speech in ring_buffer if speech])
-            if num_voiced > 0.9 * ring_buffer.maxlen:
-                triggered = True
-                voiced_frames.extend([f for f, s in ring_buffer])
-                ring_buffer.clear()
-        else:
-            voiced_frames.append(frame)
-            ring_buffer.append((frame, is_speech))
-            num_unvoiced = len([f for f, speech in ring_buffer if not speech])
-            if num_unvoiced > 0.9 * ring_buffer.maxlen:
-                triggered = False
-                yield b''.join([f.bytes for f in voiced_frames])
-                ring_buffer.clear()
-                voiced_frames = []
-
-    if voiced_frames:
-        yield b''.join([f.bytes for f in voiced_frames])
-
-class Frame:
-    def __init__(self, bytes: bytes, timestamp: float, duration: float):
-        self.bytes = bytes
-        self.timestamp = timestamp
-        self.duration = duration
-
-def frame_generator(
-        frame_duration_ms: int,
-        audio: np.ndarray,
-        sample_rate: int
-) -> Iterator[bytes]:
-    n = int(sample_rate * (frame_duration_ms / 1000.0) * 2)
-    offset = 0
-    timestamp = 0.0
-    duration = (float(n) / sample_rate) / 2.0
-    while offset + n < len(audio):
-        yield Frame(audio[offset:offset + n], timestamp, duration)
-        timestamp += duration
-        offset += n
+logger = setup_logger()
 
 def recognize_audio(
         rcg: sr.Recognizer,
@@ -89,6 +25,16 @@ def recognize_audio(
         stop_event: threading.Event,
         language: str
 ) -> None:
+    """
+    Function to recognize audio from the queue in a separate thread.
+    
+    Parameters:
+    rcg (sr.Recognizer): The recognizer object.
+    audio_queue (Queue): The queue containing audio data.
+    results_queue (Queue): The queue to put recognition results.
+    stop_event (threading.Event): Event to signal when to stop.
+    language (str): The language code for recognition.
+    """
     while not stop_event.is_set():
         try:
             audio = audio_queue.get(timeout=1)
@@ -126,6 +72,20 @@ def listen_and_process_audio(
         stop_event: threading.Event,
         device_index: int
 ) -> None:
+    """
+    Listen and process audio in a separate thread.
+    
+    Parameters:
+    rcg (sr.Recognizer): The recognizer object.
+    audio_queue (Queue): The queue to put audio data.
+    vad (webrtcvad.Vad): The VAD object.
+    sample_rate (int): The sample rate of the audio.
+    frame_duration_ms (int): The frame duration in milliseconds.
+    padding_duration_ms (int): The padding duration in milliseconds.
+    results_queue (Queue): The queue to put recognition results.
+    stop_event (threading.Event): Event to signal when to stop.
+    device_index (int): The index of the audio input device.
+    """
     with sr.Microphone(sample_rate=sample_rate, device_index=device_index) as source:
         rcg.adjust_for_ambient_noise(source)
         logger.info('Waiting for you to speak...')
@@ -157,32 +117,10 @@ def listen_and_process_audio(
                 results_queue.put(error_msg)
                 logger.error(error_msg)
 
-def list_input_devices() -> list:
-    p = pyaudio.PyAudio()
-    info = p.get_host_api_info_by_index(0)
-    numdevices = info.get('deviceCount')
-    devices = []
-    for i in range(numdevices):
-        device_info = p.get_device_info_by_host_api_device_index(0, i)
-        if device_info.get('maxInputChannels') > 0:
-            devices.append((i, device_info.get('name')))
-    p.terminate()
-    return devices
-
-def select_language() -> str:
-    print("Select the language for speech recognition:")
-    print("1: English")
-    print("2: Turkish")
-    choice = input("Enter the number of your choice: ")
-    if choice == "1":
-        return "en-US"
-    elif choice == "2":
-        return "tr-TR"
-    else:
-        print("Invalid choice. Defaulting to English.")
-        return "en-US"
-
 def main() -> None:
+    """
+    Main function to run the speech recognition application.
+    """
     devices = list_input_devices()
     print("Available input devices:")
     for idx, name in devices:
@@ -249,4 +187,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

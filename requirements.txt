@@ -1,2 +1,4 @@
-SpeechRecognition
+numpy
 pyaudio
+SpeechRecognition
+webrtcvad
