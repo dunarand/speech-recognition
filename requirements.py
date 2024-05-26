@@ -12,6 +12,5 @@ def install_requirements() -> None:
     """Installs dependencies specified in the requirements.txt file."""
     system(f'pip install -r {PATH}')
 
-def update_requirements() -> None:
-    """Updates dependencies specified in the requirements.txt file."""
-    system(f'pur -r {PATH}')
+if __name__ == '__main__':
+    install_requirements()
