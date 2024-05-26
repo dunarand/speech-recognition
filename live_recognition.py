@@ -234,6 +234,3 @@ def live_transcription() -> None:
         recognize_thread.join()
         listen_thread.join()
         logger.info("Program terminated")
-
-if __name__ == "__main__":
-    live_transcription()

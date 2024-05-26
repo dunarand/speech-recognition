@@ -18,5 +18,7 @@ def main():
     else:
         print("Invalid option. Please enter either 1 or 2.")
 
+    input("Press any key to exit...")
+
 if __name__ == "__main__":
     main()
