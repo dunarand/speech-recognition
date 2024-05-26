@@ -1,0 +1,13 @@
+2024-05-26 21:57:43,460 - INFO - Waiting for you to speak...
+2024-05-26 21:57:48,244 - INFO - Transcription: can you understand me hello
+2024-05-26 21:57:56,017 - INFO - Transcription: can you hear me speak
+2024-05-26 21:57:58,219 - INFO - Transcription: if I can speak and you can transcribe
+2024-05-26 21:58:13,242 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:58:15,166 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:58:20,067 - INFO - Transcription: are we good to go
+2024-05-26 21:58:23,502 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:58:29,488 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:58:37,118 - INFO - Transcription: okay
+2024-05-26 21:58:51,909 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:58:53,926 - INFO - Keyboard interrupt detected. Stopping...
+2024-05-26 21:58:55,025 - INFO - Program terminated

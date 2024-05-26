@@ -1,0 +1,17 @@
+2024-05-26 21:52:24,167 - INFO - Waiting for you to speak...
+2024-05-26 21:52:28,150 - INFO - Transcription: Beni duyabiliyor musun
+2024-05-26 21:52:33,608 - INFO - Transcription: Tamamdır kapatabilirsin
+2024-05-26 21:52:36,325 - INFO - Transcription: sonrasında Geri aç
+2024-05-26 21:52:40,007 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:52:44,136 - INFO - Transcription: Miraç
+2024-05-26 21:52:50,804 - INFO - Transcription: Geri aç
+2024-05-26 21:52:53,771 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:52:57,138 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:53:00,335 - INFO - Transcription: ses ver
+2024-05-26 21:53:04,220 - INFO - Transcription: düzeltin mi
+2024-05-26 21:53:09,638 - INFO - Transcription: düzeldi isen devam et
+2024-05-26 21:53:10,766 - INFO - Transcription: gelmediysen hatları
+2024-05-26 21:53:12,355 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:53:15,235 - ERROR - Google Speech Recognition could not understand audio
+2024-05-26 21:53:15,235 - INFO - Keyboard interrupt detected. Stopping...
+2024-05-26 21:53:16,237 - INFO - Program terminated

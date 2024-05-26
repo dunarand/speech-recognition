@@ -7,6 +7,7 @@ Functions:
     select_language
 """
 
+import os
 from datetime import datetime
 import logging
 
@@ -15,7 +16,13 @@ import pyaudio
 def setup_logger():
     """
     Setup logging configuration.
+    Creates the ./logs directory if it doesn't exist.
     """
+    # Create the logs directory if it doesn't exist
+    logs_dir = './logs'
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
     # Generate log filename with current date and time
     log_filename = datetime.now().strftime(
         "speech_recognition_%Y-%m-%d-%H-%M-%S.log"
@@ -26,7 +33,7 @@ def setup_logger():
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[
                             logging.FileHandler(
-                                filename=f'./logs/{log_filename}',
+                                filename=os.path.join(logs_dir, log_filename),
                                 encoding='utf-8'
                             ),
                             logging.StreamHandler()
